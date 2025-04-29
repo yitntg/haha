@@ -14,9 +14,6 @@ export async function sendMessage(message: string) {
     }
 
     const data = await response.json();
-    if (!data.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response format from API');
-    }
     return data.choices[0].message.content;
   } catch (error) {
     console.error('Error:', error);

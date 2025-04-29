@@ -4,6 +4,7 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import ThemeToggle from './ThemeToggle';
 import type { Message } from '../types';
+import { sendMessage } from '../services/api';
 
 interface Position {
   x: number;
@@ -70,7 +71,16 @@ const FloatingChatWidget: React.FC = () => {
     
     try {
       setIsThinking(true);
-      // TODO: 实现发送消息的逻辑
+      const response = await sendMessage(content);
+      
+      const assistantMessage: Message = {
+        id: crypto.randomUUID(),
+        content: response,
+        type: 'assistant',
+        timestamp: Date.now(),
+      };
+      
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error:', error);
       setError(error instanceof Error ? error.message : '发送消息时发生错误');
