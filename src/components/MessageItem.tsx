@@ -29,7 +29,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onCopy, onDownload, 
   };
 
   return (
-    <div className={`flex gap-4 p-6 ${isAssistant ? 'bg-input-dark' : ''}`}>
+    <div className={`flex gap-4 p-4 ${isAssistant ? 'bg-input-dark' : ''} ${!isAssistant ? 'flex-row-reverse' : ''}`}>
       <div className="flex-shrink-0">
         {isAssistant ? (
           <FaRobot className="text-2xl text-primary-blue" />
@@ -37,9 +37,9 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onCopy, onDownload, 
           <FaUser className="text-2xl text-gray-400" />
         )}
       </div>
-      <div className="flex-1">
+      <div className={`flex-1 max-w-2xl ${!isAssistant ? 'flex flex-col items-end' : ''}`}>
         {isEditing ? (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-full">
             <textarea
               className="w-full bg-transparent border border-gray-600 rounded-lg p-2 focus:outline-none focus:border-primary-blue"
               value={editContent}
@@ -62,7 +62,9 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onCopy, onDownload, 
             </div>
           </div>
         ) : (
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          <div className={`whitespace-pre-wrap rounded-lg p-3 ${isAssistant ? 'bg-button-dark' : 'bg-primary-blue text-white'}`}>
+            {message.content}
+          </div>
         )}
       </div>
       {isAssistant && !isEditing && (

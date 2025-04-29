@@ -48,13 +48,14 @@
 
 /* 消息布局样式 */
 .message-container {
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
 .message-item {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   transition: all 0.3s ease;
 }
 
@@ -64,6 +65,7 @@
 
 /* 输入框样式 */
 .chat-input-container {
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
   padding: 1rem;

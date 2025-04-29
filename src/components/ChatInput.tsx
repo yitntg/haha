@@ -45,7 +45,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <div className="chat-input-container">
-      <div className="relative bg-input-dark rounded-lg shadow-lg">
+      <div className="relative bg-input-dark rounded-lg shadow-lg max-w-2xl mx-auto">
         <div className="flex items-center p-2 border-b border-gray-700">
           <button
             className={`p-2 hover:bg-button-dark rounded-lg flex items-center gap-2 ${
