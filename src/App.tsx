@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Header from './components/Header'
 import ChatInput from './components/ChatInput'
 import MessageList from './components/MessageList'
+import { sendMessage } from './services/api'
 import type { Message } from './types'
 import './index.css'
 
@@ -11,7 +12,7 @@ function App() {
   const [isThinking, setIsThinking] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
 
-  const handleSend = (content: string) => {
+  const handleSend = async (content: string) => {
     const newMessage: Message = {
       id: uuidv4(),
       content,
@@ -19,17 +20,30 @@ function App() {
       timestamp: Date.now(),
     }
     setMessages((prev) => [...prev, newMessage])
-
-    // 模拟助手回复
-    setTimeout(() => {
-      const response: Message = {
+    
+    try {
+      setIsThinking(true)
+      const response = await sendMessage(content)
+      
+      const assistantMessage: Message = {
         id: uuidv4(),
-        content: `我收到了您的消息：${content}`,
+        content: response,
         type: 'assistant',
         timestamp: Date.now(),
       }
-      setMessages((prev) => [...prev, response])
-    }, 1000)
+      setMessages((prev) => [...prev, assistantMessage])
+    } catch (error) {
+      console.error('Error:', error)
+      const errorMessage: Message = {
+        id: uuidv4(),
+        content: '抱歉，发生了一些错误。请稍后再试。',
+        type: 'assistant',
+        timestamp: Date.now(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
+      setIsThinking(false)
+    }
   }
 
   const handleThink = () => {
