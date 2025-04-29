@@ -27,28 +27,33 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking, onEdit 
 
   return (
     <div className="flex-1 overflow-y-auto">
-      {messages.map((message) => (
-        <MessageItem
-          key={message.id}
-          message={message}
-          onCopy={handleCopy}
-          onDownload={handleDownload}
-          onEdit={onEdit}
-        />
-      ))}
-      {isThinking && (
-        <div className="flex gap-4 p-6 bg-input-dark">
-          <div className="flex-shrink-0">
-            <FaRobot className="text-2xl text-primary-blue" />
+      <div className="message-container">
+        {messages.map((message) => (
+          <div key={message.id} className="message-item">
+            <MessageItem
+              message={message}
+              onCopy={handleCopy}
+              onDownload={handleDownload}
+              onEdit={onEdit}
+            />
           </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <FaSpinner className="animate-spin text-primary-blue" />
-              <span className="text-gray-400">正在思考中...</span>
+        ))}
+        {isThinking && (
+          <div className="message-item">
+            <div className="flex gap-4 p-6 bg-input-dark rounded-lg">
+              <div className="flex-shrink-0">
+                <FaRobot className="text-2xl text-primary-blue" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <FaSpinner className="animate-spin text-primary-blue" />
+                  <span className="text-gray-400">正在思考中...</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Header from './components/Header'
 import ChatInput from './components/ChatInput'
 import MessageList from './components/MessageList'
+import ThemeToggle from './components/ThemeToggle'
 import { sendMessage } from './services/api'
 import { saveMessages, loadMessages, clearMessages } from './services/storage'
 import type { Message } from './types'
@@ -95,9 +96,10 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen bg-deep-dark text-white">
-      <Header />
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex justify-end p-4">
+      <div className="flex justify-between items-center p-4">
+        <Header />
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
           <button
             onClick={handleClearHistory}
             className="px-4 py-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20"
@@ -105,6 +107,8 @@ function App() {
             清空聊天记录
           </button>
         </div>
+      </div>
+      <main className="flex-1 flex flex-col overflow-hidden">
         <MessageList 
           messages={messages} 
           isThinking={isThinking} 

@@ -44,9 +44,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
-      <div className="relative bg-input-dark rounded-lg">
-        <div className="flex items-center p-2">
+    <div className="chat-input-container">
+      <div className="relative bg-input-dark rounded-lg shadow-lg">
+        <div className="flex items-center p-2 border-b border-gray-700">
           <button
             className={`p-2 hover:bg-button-dark rounded-lg flex items-center gap-2 ${
               isThinking ? 'text-primary-blue' : 'text-gray-400'
@@ -66,16 +66,16 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <span>联网搜索</span>
           </button>
         </div>
-        <div className="flex items-center p-2 border-t border-gray-700">
+        <div className="p-4">
           <textarea
-            className="flex-1 bg-transparent outline-none resize-none px-2 h-10 leading-10"
+            className="w-full bg-transparent outline-none resize-none"
             placeholder="给 DeepSeek 发送消息"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            rows={1}
+            rows={3}
           />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between mt-4">
             <input
               type="file"
               ref={fileInputRef}
@@ -83,16 +83,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
               className="hidden"
             />
             <button
-              className="p-2 hover:bg-button-dark rounded-full text-gray-400"
+              className="p-2 hover:bg-button-dark rounded-lg text-gray-400"
               onClick={() => fileInputRef.current?.click()}
             >
               <FiPaperclip className="text-xl" />
             </button>
             <button
-              className="p-2 bg-primary-blue hover:bg-blue-600 rounded-full text-white"
+              className="px-4 py-2 bg-primary-blue hover:bg-blue-600 rounded-lg text-white flex items-center gap-2"
               onClick={handleSend}
+              disabled={!message.trim() || isThinking}
             >
               <FiArrowUp className="text-xl" />
+              <span>发送</span>
             </button>
           </div>
         </div>
