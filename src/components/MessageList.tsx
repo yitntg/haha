@@ -1,6 +1,6 @@
 import MessageItem from './MessageItem';
 import type { Message } from '../types';
-import { FaSpinner } from 'react-icons/fa';
+import { FaSpinner, FaRobot } from 'react-icons/fa';
 
 interface MessageListProps {
   messages: Message[];
