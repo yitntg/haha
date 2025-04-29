@@ -7,6 +7,7 @@ import ThemeToggle from './components/ThemeToggle'
 import { sendMessage } from './services/api'
 import { saveMessages, loadMessages, clearMessages } from './services/storage'
 import type { Message } from './types'
+import FloatingChatWidget from './components/FloatingChatWidget'
 import './index.css'
 
 function App() {
@@ -95,39 +96,8 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-deep-dark text-white">
-      <div className="flex justify-between items-center p-4">
-        <Header />
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          <button
-            onClick={handleClearHistory}
-            className="px-4 py-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20"
-          >
-            清空聊天记录
-          </button>
-        </div>
-      </div>
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <MessageList 
-          messages={messages} 
-          isThinking={isThinking} 
-          onEdit={handleEditMessage}
-        />
-        {error && (
-          <div className="p-4 bg-red-500/10 text-red-500 text-center">
-            {error}
-          </div>
-        )}
-      </main>
-      <ChatInput
-        onSend={handleSend}
-        onThink={handleThink}
-        onSearch={handleSearch}
-        onUpload={handleUpload}
-        isThinking={isThinking}
-        isSearching={isSearching}
-      />
+    <div className="min-h-screen bg-deep-dark">
+      <FloatingChatWidget />
     </div>
   )
 }
