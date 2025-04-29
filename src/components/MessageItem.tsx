@@ -1,14 +1,32 @@
-import { FaRobot, FaUser, FaCopy, FaDownload } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaRobot, FaUser, FaCopy, FaDownload, FaEdit, FaCheck, FaTimes } from 'react-icons/fa';
 import type { Message } from '../types';
 
 interface MessageItemProps {
   message: Message;
   onCopy: (content: string) => void;
   onDownload: (content: string) => void;
+  onEdit: (id: string, newContent: string) => void;
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ message, onCopy, onDownload }) => {
+const MessageItem: React.FC<MessageItemProps> = ({ message, onCopy, onDownload, onEdit }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(message.content);
   const isAssistant = message.type === 'assistant';
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    onEdit(message.id, editContent);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditContent(message.content);
+    setIsEditing(false);
+  };
 
   return (
     <div className={`flex gap-4 p-6 ${isAssistant ? 'bg-input-dark' : ''}`}>
@@ -20,9 +38,34 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onCopy, onDownload }
         )}
       </div>
       <div className="flex-1">
-        <div className="whitespace-pre-wrap">{message.content}</div>
+        {isEditing ? (
+          <div className="flex flex-col gap-2">
+            <textarea
+              className="w-full bg-transparent border border-gray-600 rounded-lg p-2 focus:outline-none focus:border-primary-blue"
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              rows={4}
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleSave}
+                className="px-3 py-1 bg-primary-blue text-white rounded-lg hover:bg-blue-600"
+              >
+                <FaCheck />
+              </button>
+              <button
+                onClick={handleCancel}
+                className="px-3 py-1 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+              >
+                <FaTimes />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="whitespace-pre-wrap">{message.content}</div>
+        )}
       </div>
-      {isAssistant && (
+      {isAssistant && !isEditing && (
         <div className="flex gap-2">
           <button
             onClick={() => onCopy(message.content)}
@@ -37,6 +80,13 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onCopy, onDownload }
             title="下载"
           >
             <FaDownload />
+          </button>
+          <button
+            onClick={handleEdit}
+            className="p-2 hover:bg-button-dark rounded-lg text-gray-400"
+            title="编辑"
+          >
+            <FaEdit />
           </button>
         </div>
       )}

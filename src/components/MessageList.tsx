@@ -1,11 +1,14 @@
 import MessageItem from './MessageItem';
 import type { Message } from '../types';
+import { FaSpinner } from 'react-icons/fa';
 
 interface MessageListProps {
   messages: Message[];
+  isThinking: boolean;
+  onEdit: (id: string, newContent: string) => void;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, isThinking, onEdit }) => {
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
   };
@@ -30,8 +33,22 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
           message={message}
           onCopy={handleCopy}
           onDownload={handleDownload}
+          onEdit={onEdit}
         />
       ))}
+      {isThinking && (
+        <div className="flex gap-4 p-6 bg-input-dark">
+          <div className="flex-shrink-0">
+            <FaRobot className="text-2xl text-primary-blue" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <FaSpinner className="animate-spin text-primary-blue" />
+              <span className="text-gray-400">正在思考中...</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
