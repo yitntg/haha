@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { FaRobot, FaMinus, FaExpand } from 'react-icons/fa';
+import React, { useState, useRef, useEffect } from 'react';
+import { FaRobot, FaMinus } from 'react-icons/fa';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import ThemeToggle from './ThemeToggle';
@@ -10,7 +10,7 @@ interface Position {
   y: number;
 }
 
-const FloatingChatWidget = () => {
+const FloatingChatWidget: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isThinking, setIsThinking] = useState(false);
