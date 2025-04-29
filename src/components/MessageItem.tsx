@@ -37,7 +37,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onCopy, onDownload, 
           <FaUser className="text-2xl text-gray-400" />
         )}
       </div>
-      <div className={`flex-1 max-w-2xl ${!isAssistant ? 'flex flex-col items-end' : ''}`}>
+      <div className={`flex-1 max-w-[460px] ${!isAssistant ? 'flex flex-col items-end' : ''}`}>
         {isEditing ? (
           <div className="flex flex-col gap-2 w-full">
             <textarea

@@ -17,7 +17,7 @@ const FloatingChatWidget: React.FC = () => {
   const [isThinking, setIsThinking] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [position, setPosition] = useState<Position>({ x: window.innerWidth - 420, y: 20 });
+  const [position, setPosition] = useState<Position>({ x: window.innerWidth - 600, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
@@ -103,8 +103,8 @@ const FloatingChatWidget: React.FC = () => {
       }`}
       style={{
         transform: `translate(${position.x}px, ${position.y}px)`,
-        width: isExpanded ? '400px' : '60px',
-        height: isExpanded ? '600px' : '60px',
+        width: isExpanded ? '580px' : '60px',
+        height: isExpanded ? '700px' : '60px',
         backgroundColor: 'var(--bg-input-dark)',
         zIndex: 1000,
       }}
