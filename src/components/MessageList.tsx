@@ -1,4 +1,3 @@
-import React from 'react';
 import MessageItem from './MessageItem';
 import type { Message } from '../types';
 

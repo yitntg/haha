@@ -1,4 +1,3 @@
-import React from 'react';
 import { FaRobot, FaUser, FaCopy, FaDownload } from 'react-icons/fa';
 import type { Message } from '../types';
 

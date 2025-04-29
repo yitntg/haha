@@ -1,7 +1,6 @@
-import React from 'react'
 import { FaRobot } from 'react-icons/fa'
 
-const Header: React.FC = () => {
+const Header = () => {
   return (
     <header className="flex flex-col items-center py-8 px-4">
       <div className="flex items-center gap-3 mb-4">
