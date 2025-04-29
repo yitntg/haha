@@ -1,11 +1,14 @@
 import FloatingChatWidget from './components/FloatingChatWidget'
+import { ChatProvider } from './contexts/ChatContext'
 import './index.css'
 
 function App() {
   return (
-    <div className="min-h-screen bg-deep-dark">
-      <FloatingChatWidget />
-    </div>
+    <ChatProvider>
+      <div className="min-h-screen bg-deep-dark">
+        <FloatingChatWidget />
+      </div>
+    </ChatProvider>
   )
 }
 

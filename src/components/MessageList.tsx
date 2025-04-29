@@ -1,14 +1,10 @@
 import MessageItem from './MessageItem';
-import type { Message } from '../types';
 import { FaSpinner, FaRobot } from 'react-icons/fa';
+import { useChatContext } from '../contexts/ChatContext';
 
-interface MessageListProps {
-  messages: Message[];
-  isThinking: boolean;
-  onEdit: (id: string, newContent: string) => void;
-}
+const MessageList: React.FC = () => {
+  const { state, editMessage } = useChatContext();
 
-const MessageList: React.FC<MessageListProps> = ({ messages, isThinking, onEdit }) => {
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
   };
@@ -28,17 +24,17 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking, onEdit 
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="message-container">
-        {messages.map((message) => (
+        {state.messages.map((message) => (
           <div key={message.id} className="message-item">
             <MessageItem
               message={message}
               onCopy={handleCopy}
               onDownload={handleDownload}
-              onEdit={onEdit}
+              onEdit={editMessage}
             />
           </div>
         ))}
-        {isThinking && (
+        {state.isThinking && (
           <div className="message-item">
             <div className="flex gap-4 p-6 bg-input-dark rounded-lg">
               <div className="flex-shrink-0">

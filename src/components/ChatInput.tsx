@@ -1,30 +1,16 @@
 import React, { useState, useRef, KeyboardEvent } from 'react';
 import { BiBrain } from 'react-icons/bi';
 import { FiGlobe, FiPaperclip, FiArrowUp } from 'react-icons/fi';
+import { useChatContext } from '../contexts/ChatContext';
 
-interface ChatInputProps {
-  onSend: (message: string) => void;
-  onThink: () => void;
-  onSearch: () => void;
-  onUpload: (file: File) => void;
-  isThinking: boolean;
-  isSearching: boolean;
-}
-
-const ChatInput: React.FC<ChatInputProps> = ({
-  onSend,
-  onThink,
-  onSearch,
-  onUpload,
-  isThinking,
-  isSearching
-}) => {
+const ChatInput: React.FC = () => {
+  const { state, sendUserMessage, toggleThinking, toggleSearching } = useChatContext();
   const [message, setMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
     if (message.trim()) {
-      onSend(message.trim());
+      sendUserMessage(message.trim());
       setMessage('');
     }
   };
@@ -39,7 +25,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onUpload(file);
+      // TODO: 实现文件上传功能
+      console.log('File selected:', file);
     }
   };
 
@@ -49,18 +36,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
         <div className="flex items-center p-2 border-b border-gray-700">
           <button
             className={`p-2 hover:bg-button-dark rounded-lg flex items-center gap-2 ${
-              isThinking ? 'text-primary-blue' : 'text-gray-400'
+              state.isThinking ? 'text-primary-blue' : 'text-gray-400'
             }`}
-            onClick={onThink}
+            onClick={toggleThinking}
           >
             <BiBrain className="text-xl" />
             <span>深度思考</span>
           </button>
           <button
             className={`p-2 hover:bg-button-dark rounded-lg flex items-center gap-2 ${
-              isSearching ? 'text-primary-blue' : 'text-gray-400'
+              state.isSearching ? 'text-primary-blue' : 'text-gray-400'
             }`}
-            onClick={onSearch}
+            onClick={toggleSearching}
           >
             <FiGlobe className="text-xl" />
             <span>联网搜索</span>
@@ -91,7 +78,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <button
               className="px-4 py-2 bg-primary-blue hover:bg-blue-600 rounded-lg text-white flex items-center gap-2"
               onClick={handleSend}
-              disabled={!message.trim() || isThinking}
+              disabled={!message.trim() || state.isThinking}
             >
               <FiArrowUp className="text-xl" />
               <span>发送</span>

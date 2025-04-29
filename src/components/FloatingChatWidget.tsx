@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { FaRobot, FaMinus } from 'react-icons/fa';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import ThemeToggle from './ThemeToggle';
-import type { Message } from '../types';
-import { sendMessage } from '../services/api';
+import { useChatContext } from '../contexts/ChatContext';
 
 interface Position {
   x: number;
@@ -12,11 +11,8 @@ interface Position {
 }
 
 const FloatingChatWidget: React.FC = () => {
+  const { state, clearMessages } = useChatContext();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isThinking, setIsThinking] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [position, setPosition] = useState<Position>({ x: window.innerWidth - 600, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
@@ -48,7 +44,7 @@ const FloatingChatWidget: React.FC = () => {
     setIsDragging(false);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
@@ -58,42 +54,6 @@ const FloatingChatWidget: React.FC = () => {
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging]);
-
-  const handleSend = async (content: string) => {
-    const newMessage: Message = {
-      id: crypto.randomUUID(),
-      content,
-      type: 'user',
-      timestamp: Date.now(),
-    };
-    setMessages((prev) => [...prev, newMessage]);
-    setError(null);
-    
-    try {
-      setIsThinking(true);
-      const response = await sendMessage(content);
-      
-      const assistantMessage: Message = {
-        id: crypto.randomUUID(),
-        content: response,
-        type: 'assistant',
-        timestamp: Date.now(),
-      };
-      
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Error:', error);
-      setError(error instanceof Error ? error.message : '发送消息时发生错误');
-    } finally {
-      setIsThinking(false);
-    }
-  };
-
-  const handleClearHistory = () => {
-    if (window.confirm('确定要清空所有聊天记录吗？')) {
-      setMessages([]);
-    }
-  };
 
   return (
     <div
@@ -123,7 +83,7 @@ const FloatingChatWidget: React.FC = () => {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <button
-                onClick={handleClearHistory}
+                onClick={clearMessages}
                 className="p-2 hover:bg-red-500/10 text-red-500 rounded-lg"
                 title="清空聊天记录"
               >
@@ -141,28 +101,17 @@ const FloatingChatWidget: React.FC = () => {
 
           {/* 聊天内容 */}
           <div className="flex flex-col h-[calc(100%-120px)] overflow-hidden">
-            <MessageList
-              messages={messages}
-              isThinking={isThinking}
-              onEdit={() => {}}
-            />
-            {error && (
+            <MessageList />
+            {state.error && (
               <div className="p-4 bg-red-500/10 text-red-500 text-center">
-                {error}
+                {state.error}
               </div>
             )}
           </div>
 
           {/* 输入框 */}
           <div className="h-[120px] border-t border-gray-700">
-            <ChatInput
-              onSend={handleSend}
-              onThink={() => setIsThinking(prev => !prev)}
-              onSearch={() => setIsSearching(prev => !prev)}
-              onUpload={() => {}}
-              isThinking={isThinking}
-              isSearching={isSearching}
-            />
+            <ChatInput />
           </div>
         </>
       ) : (
