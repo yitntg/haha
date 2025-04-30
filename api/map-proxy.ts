@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
 export default async function handler(
-  request: VercelRequest,
+  _request: VercelRequest,
   response: VercelResponse
 ) {
   const AMAP_KEY = process.env.AMAP_KEY

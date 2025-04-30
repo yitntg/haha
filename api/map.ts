@@ -1,5 +1,4 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { AMAP_KEY } from '../src/config';
 
 export default async function handler(
   request: VercelRequest,
@@ -7,6 +6,12 @@ export default async function handler(
 ) {
   if (request.method !== 'GET') {
     return response.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const AMAP_KEY = process.env.AMAP_KEY;
+  
+  if (!AMAP_KEY) {
+    return response.status(500).json({ error: 'Missing API key configuration' });
   }
 
   return response.status(200).json({ key: AMAP_KEY });
