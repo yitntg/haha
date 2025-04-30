@@ -1,1 +1,1 @@
-export const AMAP_KEY = process.env.AMAP_KEY 
+export const AMAP_KEY = import.meta.env.VITE_AMAP_KEY 

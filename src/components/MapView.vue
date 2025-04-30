@@ -1,7 +1,10 @@
 <template>
   <div class="map-container">
     <div id="mapContainer" class="map"></div>
-    <div v-if="error" class="error-message">{{ error }}</div>
+    <div v-if="error" class="error-message">
+      <h3>{{ error.title }}</h3>
+      <p>{{ error.message }}</p>
+    </div>
   </div>
 </template>
 
@@ -10,16 +13,25 @@ import { ref, onMounted } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { getMapConfig } from '../api/map'
 
-const map = ref(null)
-const AMap = ref(null)
-const error = ref('')
+interface MapError {
+  title: string
+  message: string
+}
+
+const map = ref<any>(null)
+const AMap = ref<any>(null)
+const error = ref<MapError | null>(null)
 
 onMounted(async () => {
   try {
     const { key } = await getMapConfig()
     
+    if (!key) {
+      throw new Error('MISSING_KEY')
+    }
+
     const AMapInstance = await AMapLoader.load({
-      key: key,
+      key,
       version: "2.0",
       plugins: [
         'AMap.Scale',
@@ -53,9 +65,30 @@ onMounted(async () => {
     })
     map.value.addControl(geolocation)
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('地图加载失败:', err)
-    error.value = '地图加载失败，请检查网络连接和API配置'
+    
+    if (err.message === 'MISSING_KEY') {
+      error.value = {
+        title: '配置错误',
+        message: '未找到高德地图API密钥，请检查环境变量配置'
+      }
+    } else if (err.message?.includes('invalid key')) {
+      error.value = {
+        title: 'API密钥无效',
+        message: '高德地图API密钥无效，请检查配置'
+      }
+    } else if (err.message?.includes('network')) {
+      error.value = {
+        title: '网络错误',
+        message: '网络连接失败，请检查网络设置'
+      }
+    } else {
+      error.value = {
+        title: '加载失败',
+        message: '地图加载失败，请刷新页面重试'
+      }
+    }
   }
 })
 </script>
@@ -83,5 +116,14 @@ onMounted(async () => {
   padding: 20px;
   border-radius: 5px;
   z-index: 1000;
+  text-align: center;
+}
+
+.error-message h3 {
+  margin: 0 0 10px 0;
+}
+
+.error-message p {
+  margin: 0;
 }
 </style> 

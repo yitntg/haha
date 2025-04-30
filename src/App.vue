@@ -7,15 +7,8 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import MapView from './components/MapView.vue'
-
-export default {
-  name: 'App',
-  components: {
-    MapView
-  }
-}
 </script>
 
 <style>
