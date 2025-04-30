@@ -2,6 +2,13 @@
   "version": 2,
   "routes": [
     {
+      "src": "/assets/(.*)\\.js",
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8"
+      },
+      "continue": true
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/$1"
     },

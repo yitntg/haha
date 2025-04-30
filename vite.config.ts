@@ -23,29 +23,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
-    sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    },
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'index.html')
-      },
-      output: {
-        manualChunks: {
-          'vue': ['vue'],
-          'amap': ['@amap/amap-jsapi-loader']
-        },
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
-      }
-    }
+    assetsDir: 'assets'
   },
   optimizeDeps: {
     include: ['@amap/amap-jsapi-loader']
