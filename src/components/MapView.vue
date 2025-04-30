@@ -6,73 +6,63 @@
   </div>
 </template>
 
-<script>
-import AMapLoader from '@amap/amap-jsapi-loader';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import AMapLoader from '@amap/amap-jsapi-loader'
 
-export default {
-  name: 'MapView',
-  data() {
-    return {
-      map: null,
-      AMap: null,
-      error: null
+const map = ref(null)
+const AMap = ref(null)
+const error = ref(null)
+
+onMounted(async () => {
+  try {
+    // 从后端获取API Key
+    const response = await fetch('/api/map')
+    if (!response.ok) {
+      throw new Error('获取地图配置失败')
     }
-  },
-  mounted() {
-    this.initMap();
-  },
-  methods: {
-    async initMap() {
-      try {
-        // 从后端获取API Key
-        const response = await fetch('/api/map');
-        if (!response.ok) {
-          throw new Error('获取地图配置失败');
-        }
-        const { key } = await response.json();
+    const { key } = await response.json()
 
-        const AMap = await AMapLoader.load({
-          key: key,
-          version: "2.0",
-          plugins: [
-            'AMap.Scale',
-            'AMap.ToolBar',
-            'AMap.HawkEye',
-            'AMap.Geolocation', // 添加定位插件
-            'AMap.MarkerClusterer' // 添加点聚合插件
-          ]
-        });
-        
-        this.AMap = AMap;
-        this.map = new AMap.Map('mapContainer', {
-          zoom: 11,
-          center: [116.397428, 39.90923], // 北京市中心
-          viewMode: '3D',
-          resizeEnable: true
-        });
+    const AMapInstance = await AMapLoader.load({
+      key: key,
+      version: "2.0",
+      plugins: [
+        'AMap.Scale',
+        'AMap.ToolBar',
+        'AMap.HawkEye',
+        'AMap.Geolocation',
+        'AMap.MarkerClusterer'
+      ]
+    })
+    
+    AMap.value = AMapInstance
+    map.value = new AMapInstance.Map('mapContainer', {
+      zoom: 11,
+      center: [116.397428, 39.90923],
+      viewMode: '3D',
+      resizeEnable: true
+    })
 
-        // 添加地图控件
-        this.map.addControl(new AMap.Scale());
-        this.map.addControl(new AMap.ToolBar());
-        this.map.addControl(new AMap.HawkEye());
-        
-        // 添加定位控件
-        const geolocation = new AMap.Geolocation({
-          enableHighAccuracy: true,
-          timeout: 10000,
-          buttonPosition: 'RB',
-          buttonOffset: new AMap.Pixel(10, 20),
-          zoomToAccuracy: true
-        });
-        this.map.addControl(geolocation);
+    // 添加地图控件
+    map.value.addControl(new AMapInstance.Scale())
+    map.value.addControl(new AMapInstance.ToolBar())
+    map.value.addControl(new AMapInstance.HawkEye())
+    
+    // 添加定位控件
+    const geolocation = new AMapInstance.Geolocation({
+      enableHighAccuracy: true,
+      timeout: 10000,
+      buttonPosition: 'RB',
+      buttonOffset: new AMapInstance.Pixel(10, 20),
+      zoomToAccuracy: true
+    })
+    map.value.addControl(geolocation)
 
-      } catch (error) {
-        console.error('地图加载失败:', error);
-        this.error = '地图加载失败，请检查网络连接和API配置';
-      }
-    }
+  } catch (err) {
+    console.error('地图加载失败:', err)
+    error.value = '地图加载失败，请检查网络连接和API配置'
   }
-}
+})
 </script>
 
 <style scoped>
