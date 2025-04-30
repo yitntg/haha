@@ -4,7 +4,9 @@
     <div v-if="error" class="error-message">
       <h3>{{ error.title }}</h3>
       <p>{{ error.message }}</p>
+      <pre v-if="errorDetails" class="error-details">{{ errorDetails }}</pre>
     </div>
+    <div class="loading-indicator" v-if="loading">加载中...</div>
   </div>
 </template>
 
@@ -21,15 +23,31 @@ interface MapError {
 const map = ref<any>(null)
 const AMap = ref<any>(null)
 const error = ref<MapError | null>(null)
+const loading = ref(true)
+const errorDetails = ref('')
 
 onMounted(async () => {
+  console.log('MapView组件已挂载')
   try {
-    const key = await getMapKey()
+    loading.value = true
+    console.log('开始获取地图API密钥')
+    
+    let key
+    try {
+      key = await getMapKey()
+      console.log('成功获取API密钥:', key ? '密钥有效' : '密钥为空')
+    } catch (apiError: any) {
+      console.error('获取API密钥失败:', apiError)
+      errorDetails.value = `API密钥获取错误: ${JSON.stringify(apiError, null, 2)}`
+      throw new Error('API_KEY_FETCH_ERROR')
+    }
     
     if (!key) {
+      console.error('API密钥为空')
       throw new Error('MISSING_KEY')
     }
 
+    console.log('开始加载高德地图')
     const AMapInstance = await AMapLoader.load({
       key,
       version: "2.0",
@@ -37,11 +55,11 @@ onMounted(async () => {
         'AMap.Scale',
         'AMap.ToolBar',
         'AMap.HawkEye',
-        'AMap.Geolocation',
-        'AMap.MarkerClusterer'
+        'AMap.Geolocation'
       ]
     })
     
+    console.log('高德地图加载成功')
     AMap.value = AMapInstance
     map.value = new AMapInstance.Map('mapContainer', {
       zoom: 11,
@@ -50,25 +68,26 @@ onMounted(async () => {
       resizeEnable: true
     })
 
+    console.log('地图实例创建成功')
     // 添加地图控件
     map.value.addControl(new AMapInstance.Scale())
     map.value.addControl(new AMapInstance.ToolBar())
     map.value.addControl(new AMapInstance.HawkEye())
     
-    // 添加定位控件
-    const geolocation = new AMapInstance.Geolocation({
-      enableHighAccuracy: true,
-      timeout: 10000,
-      buttonPosition: 'RB',
-      buttonOffset: new AMapInstance.Pixel(10, 20),
-      zoomToAccuracy: true
-    })
-    map.value.addControl(geolocation)
+    console.log('地图控件添加成功')
+    loading.value = false
 
   } catch (err: any) {
+    loading.value = false
     console.error('地图加载失败:', err)
+    errorDetails.value = `错误详情: ${err.message || JSON.stringify(err)}`
     
-    if (err.message === 'MISSING_KEY') {
+    if (err.message === 'API_KEY_FETCH_ERROR') {
+      error.value = {
+        title: 'API请求错误',
+        message: '无法从服务器获取地图API密钥，请检查网络连接'
+      }
+    } else if (err.message === 'MISSING_KEY') {
       error.value = {
         title: '配置错误',
         message: '未找到高德地图API密钥，请检查服务器配置'
@@ -106,6 +125,18 @@ onMounted(async () => {
   height: 100%;
 }
 
+.loading-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 999;
+}
+
 .error-message {
   position: absolute;
   top: 50%;
@@ -117,6 +148,7 @@ onMounted(async () => {
   border-radius: 5px;
   z-index: 1000;
   text-align: center;
+  max-width: 80%;
 }
 
 .error-message h3 {
@@ -124,6 +156,15 @@ onMounted(async () => {
 }
 
 .error-message p {
-  margin: 0;
+  margin: 0 0 10px 0;
+}
+
+.error-details {
+  text-align: left;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  font-size: 12px;
+  max-height: 200px;
+  overflow: auto;
 }
 </style> 

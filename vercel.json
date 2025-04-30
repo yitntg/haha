@@ -1,21 +1,13 @@
 {
-  "version": 2,
-  "framework": "vite",
-  "routes": [
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ],
+  "headers": [
     {
-      "src": "/assets/(.*)\\.js",
-      "headers": {
-        "content-type": "application/javascript; charset=utf-8"
-      },
-      "continue": true
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
     }
   ]
 } 

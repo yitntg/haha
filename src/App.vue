@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <div class="debug-info">测试信息 - 如果您能看到此消息，则基本渲染正常</div>
     <MapView class="map-view" />
     <div class="content-overlay">
       <!-- 其他内容可以放在这里 -->
@@ -24,6 +25,16 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+
+.debug-info {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: yellow;
+  padding: 10px;
+  z-index: 1000;
+  font-weight: bold;
 }
 
 .map-view {
