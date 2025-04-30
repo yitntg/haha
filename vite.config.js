@@ -8,20 +8,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    target: 'es2015',
+    target: 'esnext',
     minify: 'terser',
-    rollupOptions: {
-      output: {
-        entryFileNames: 'assets/[name].[hash].js',
-        chunkFileNames: 'assets/[name].[hash].js',
-        assetFileNames: 'assets/[name].[hash].[ext]',
-        format: 'iife',
-        generatedCode: {
-          preset: 'es5',
-          constBindings: false
-        }
-      }
-    }
+    cssCodeSplit: true,
+    sourcemap: false
   },
   server: {
     port: 3000,
