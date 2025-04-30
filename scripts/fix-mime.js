@@ -1,6 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const { glob } = require('glob');
+// 使用ESM导入
+import fs from 'fs';
+import path from 'path';
+import { glob } from 'glob';
 
 console.log('开始修复MIME类型...');
 
