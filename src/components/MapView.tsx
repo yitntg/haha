@@ -9,12 +9,20 @@ interface MapError {
   details?: string;
 }
 
+// 高德地图类型声明
+interface AMapType {
+  Map: any;
+  Scale: any;
+  ToolBar: any;
+}
+
 const MapView: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
-  const [AMap, setAMap] = useState<any>(null);
+  const [AMap, setAMap] = useState<AMapType | null>(null);
   const [error, setError] = useState<MapError | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     const initMap = async () => {
@@ -22,6 +30,11 @@ const MapView: React.FC = () => {
         console.log('开始初始化地图');
         setLoading(true);
 
+        // 确保容器元素存在并设置尺寸
+        if (!mapContainer.current) {
+          throw new Error('地图容器元素不存在');
+        }
+        
         // 获取API Key，使用api/map.ts中的方法
         const mapConfig = await getMapConfig();
         if (!mapConfig.key) {
@@ -37,38 +50,48 @@ const MapView: React.FC = () => {
           version: '2.0',
           plugins: [
             'AMap.Scale',
-            'AMap.ToolBar',
-            'AMap.HawkEye',
-            'AMap.Geolocation'
+            'AMap.ToolBar'
           ]
         });
         
         console.log('高德地图加载成功');
         setAMap(AMapInstance);
         
-        // 确保容器元素存在
-        if (!mapContainer.current) {
-          throw new Error('地图容器元素不存在');
-        }
-        
-        // 创建地图实例
+        // 创建地图实例，优化性能配置
         const mapInstance = new AMapInstance.Map(mapContainer.current, {
           zoom: 11,
           center: [116.397428, 39.90923],
-          viewMode: '3D',
-          resizeEnable: true
+          viewMode: '2D', // 改为2D模式，性能更好
+          resizeEnable: true,
+          jogEnable: false, // 禁用地图缓动效果
+          pitchEnable: false, // 禁用俯仰角度
+          buildingAnimation: false, // 禁用建筑物动画效果
+          mapStyle: 'amap://styles/normal', // 使用标准样式
+          features: ['bg', 'road', 'building', 'point'] // 仅加载基本要素
         });
+        
+        // 延迟添加地图控件，避免同时加载导致的性能问题
+        setTimeout(() => {
+          if (mapInstance) {
+            // 添加地图基础控件
+            mapInstance.addControl(new AMapInstance.Scale());
+            mapInstance.addControl(new AMapInstance.ToolBar({
+              position: 'RB' // 放在右下方
+            }));
+            
+            console.log('地图控件添加成功');
+          }
+        }, 1000);
         
         console.log('地图实例创建成功');
         setMap(mapInstance);
         
-        // 添加地图控件
-        mapInstance.addControl(new AMapInstance.Scale());
-        mapInstance.addControl(new AMapInstance.ToolBar());
-        mapInstance.addControl(new AMapInstance.HawkEye());
-        
-        console.log('地图控件添加成功');
-        setLoading(false);
+        // 监听地图加载完成事件
+        mapInstance.on('complete', () => {
+          console.log('地图渲染完成');
+          setLoading(false);
+          setMapLoaded(true);
+        });
         
       } catch (err: any) {
         console.error('地图加载失败:', err);
@@ -120,7 +143,11 @@ const MapView: React.FC = () => {
 
   return (
     <div className="map-container">
-      <div id="mapContainer" ref={mapContainer} className="map"></div>
+      <div 
+        id="mapContainer" 
+        ref={mapContainer} 
+        className={`map ${mapLoaded ? 'loaded' : ''}`}
+      ></div>
       
       {error && (
         <div className="error-message">
@@ -133,7 +160,7 @@ const MapView: React.FC = () => {
       )}
       
       {loading && (
-        <div className="loading-indicator">加载中...</div>
+        <div className="loading-indicator">地图加载中...</div>
       )}
     </div>
   );
