@@ -10,17 +10,17 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "vue": "^3.3.4",
-    "@amap/amap-jsapi-loader": "^1.0.1"
+    "@amap/amap-jsapi-loader": "^1.0.1",
+    "vue": "^3.3.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "terser": "^5.28.1",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
-    "vue-tsc": "^1.8.5",
-    "postcss": "^8.4.32",
-    "autoprefixer": "^10.4.16",
-    "tailwindcss": "^3.4.0",
-    "terser": "^5.28.1"
+    "vue-tsc": "^1.8.5"
   }
 }

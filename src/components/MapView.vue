@@ -1,8 +1,7 @@
 <template>
-  <div id="mapContainer" class="map-container">
-    <div v-if="error" class="error-message">
-      {{ error }}
-    </div>
+  <div class="map-container">
+    <div id="mapContainer"></div>
+    <div v-if="error" class="error-message">{{ error }}</div>
   </div>
 </template>
 
@@ -12,19 +11,12 @@ import AMapLoader from '@amap/amap-jsapi-loader'
 
 const map = ref(null)
 const AMap = ref(null)
-const error = ref(null)
+const error = ref('')
 
 onMounted(async () => {
   try {
-    // 从后端获取API Key
-    const response = await fetch('/api/map')
-    if (!response.ok) {
-      throw new Error('获取地图配置失败')
-    }
-    const { key } = await response.json()
-
     const AMapInstance = await AMapLoader.load({
-      key: key,
+      key: import.meta.env.AMAP_KEY,
       version: "2.0",
       plugins: [
         'AMap.Scale',
