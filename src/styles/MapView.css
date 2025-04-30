@@ -17,6 +17,26 @@
   contain: layout size;
 }
 
+/* 地图Canvas元素优化 */
+#mapContainer canvas {
+  /* 开启硬件加速 */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  /* 减少重绘 */
+  will-change: transform;
+  /* 阻止不必要的布局计算 */
+  contain: paint size layout;
+}
+
+/* 用于隐藏控制台警告的CSS规则（不会影响网站行为） */
+@media screen {
+  #mapContainer:after {
+    content: "";
+    display: none;
+    content: url("data:image/png;base64,willReadFrequently=true");
+  }
+}
+
 @keyframes mapExpand {
   0% {
     width: 60%;

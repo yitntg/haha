@@ -16,6 +16,25 @@ interface AMapType {
   ToolBar: any;
 }
 
+// 为Canvas元素添加willReadFrequently属性的辅助函数
+const optimizeCanvasForReading = () => {
+  // 等待高德地图创建完Canvas元素
+  setTimeout(() => {
+    // 找到地图容器中的所有Canvas元素
+    const canvases = document.querySelectorAll('#mapContainer canvas') as NodeListOf<HTMLCanvasElement>;
+    canvases.forEach(canvas => {
+      // 获取Canvas上下文并设置willReadFrequently属性
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      // 如果需要，还可以重新绘制Canvas以应用优化
+      if (ctx && canvas.width > 0 && canvas.height > 0) {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        ctx.putImageData(imageData, 0, 0);
+      }
+    });
+    console.log('已优化地图Canvas性能');
+  }, 2000); // 延迟2秒执行，确保Canvas已创建
+};
+
 const MapView: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
@@ -67,7 +86,15 @@ const MapView: React.FC = () => {
           pitchEnable: false, // 禁用俯仰角度
           buildingAnimation: false, // 禁用建筑物动画效果
           mapStyle: 'amap://styles/normal', // 使用标准样式
-          features: ['bg', 'road', 'building', 'point'] // 仅加载基本要素
+          features: ['bg', 'road', 'building', 'point'], // 仅加载基本要素
+          // 减少Canvas读取操作的配置项
+          cacheSize: 1000, // 增加缓存大小
+          renderOptions: {
+            fps: 30, // 降低帧率，减少重绘次数
+            drawCustom: false, // 禁用自定义绘制
+            drawTraffic: false, // 禁用交通流量图层
+            alwaysRender: false // 禁用持续渲染
+          }
         });
         
         // 延迟添加地图控件，避免同时加载导致的性能问题
@@ -91,6 +118,9 @@ const MapView: React.FC = () => {
           console.log('地图渲染完成');
           setLoading(false);
           setMapLoaded(true);
+          
+          // 优化Canvas元素
+          optimizeCanvasForReading();
         });
         
       } catch (err: any) {
