@@ -102,4 +102,21 @@
   max-height: 200px;
   overflow: auto;
   border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.retry-button {
+  background-color: white;
+  color: rgb(255, 0, 0);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background-color: #f0f0f0;
 } 

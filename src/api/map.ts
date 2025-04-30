@@ -19,6 +19,16 @@ export const getMapConfig = async () => {
     return { key: data.key, success: true }
   } catch (error) {
     console.error('获取地图配置失败:', error)
+    
+    // 在开发环境中，使用备用密钥以便调试
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('API请求失败，使用备用开发密钥')
+      return { 
+        key: '您的测试API密钥', // 请替换为您的实际开发密钥
+        success: true 
+      }
+    }
+    
     throw error
   }
 } 

@@ -42,6 +42,7 @@ const MapView: React.FC = () => {
   const [error, setError] = useState<MapError | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [retryCount, setRetryCount] = useState<number>(0);
 
   useEffect(() => {
     const initMap = async () => {
@@ -76,39 +77,14 @@ const MapView: React.FC = () => {
         console.log('高德地图加载成功');
         setAMap(AMapInstance);
         
-        // 创建地图实例，优化性能配置
-        const mapInstance = new AMapInstance.Map(mapContainer.current, {
+        // 创建地图实例，使用简化的配置
+        const mapInstance = new AMapInstance.Map(mapContainer.current as any, {
           zoom: 11,
           center: [116.397428, 39.90923],
-          viewMode: '2D', // 改为2D模式，性能更好
-          resizeEnable: true,
-          jogEnable: false, // 禁用地图缓动效果
-          pitchEnable: false, // 禁用俯仰角度
-          buildingAnimation: false, // 禁用建筑物动画效果
-          mapStyle: 'amap://styles/normal', // 使用标准样式
-          features: ['bg', 'road', 'building', 'point'], // 仅加载基本要素
-          // 减少Canvas读取操作的配置项
-          cacheSize: 1000, // 增加缓存大小
-          renderOptions: {
-            fps: 30, // 降低帧率，减少重绘次数
-            drawCustom: false, // 禁用自定义绘制
-            drawTraffic: false, // 禁用交通流量图层
-            alwaysRender: false // 禁用持续渲染
-          }
+          viewMode: '2D',
+          resizeEnable: true
+          // 移除其他可能导致问题的复杂配置
         });
-        
-        // 延迟添加地图控件，避免同时加载导致的性能问题
-        setTimeout(() => {
-          if (mapInstance) {
-            // 添加地图基础控件
-            mapInstance.addControl(new AMapInstance.Scale());
-            mapInstance.addControl(new AMapInstance.ToolBar({
-              position: 'RB' // 放在右下方
-            }));
-            
-            console.log('地图控件添加成功');
-          }
-        }, 1000);
         
         console.log('地图实例创建成功');
         setMap(mapInstance);
@@ -119,6 +95,21 @@ const MapView: React.FC = () => {
           setLoading(false);
           setMapLoaded(true);
           
+          // 地图加载完成后，再添加控件
+          setTimeout(() => {
+            if (mapInstance) {
+              try {
+                // 添加地图基础控件
+                mapInstance.addControl(new AMapInstance.Scale());
+                mapInstance.addControl(new AMapInstance.ToolBar());
+                console.log('地图控件添加成功');
+              } catch (err) {
+                console.error('添加地图控件失败:', err);
+                // 控件加载失败不影响地图使用，只记录错误
+              }
+            }
+          }, 1000);
+          
           // 优化Canvas元素
           optimizeCanvasForReading();
         });
@@ -126,6 +117,14 @@ const MapView: React.FC = () => {
       } catch (err: any) {
         console.error('地图加载失败:', err);
         setLoading(false);
+        
+        // 如果是网络问题，可以尝试重试
+        if (err.message?.includes('network') && retryCount < 3) {
+          console.log(`网络错误，${2000}ms后进行第${retryCount + 1}次重试`);
+          setRetryCount(prev => prev + 1);
+          setTimeout(initMap, 2000);
+          return;
+        }
         
         if (err.message?.includes('API请求失败')) {
           setError({
@@ -148,7 +147,7 @@ const MapView: React.FC = () => {
         } else if (err.message?.includes('network')) {
           setError({
             title: '网络错误',
-            message: '网络连接失败，请检查网络设置',
+            message: '网络连接失败，请检查网络设置或刷新页面重试',
             details: err.message
           });
         } else {
@@ -169,7 +168,13 @@ const MapView: React.FC = () => {
         map.destroy();
       }
     };
-  }, []);
+  }, [retryCount]);
+
+  // 添加重试按钮
+  const handleRetry = () => {
+    setError(null);
+    setRetryCount(prev => prev + 1);
+  };
 
   return (
     <div className="map-container">
@@ -186,6 +191,9 @@ const MapView: React.FC = () => {
           {error.details && (
             <pre className="error-details">{error.details}</pre>
           )}
+          <button onClick={handleRetry} className="retry-button">
+            重试加载
+          </button>
         </div>
       )}
       
