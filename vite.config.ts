@@ -40,5 +40,8 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     }
+  },
+  optimizeDeps: {
+    include: ['@amap/amap-jsapi-loader']
   }
 }) 
