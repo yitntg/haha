@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import '../styles/MapView.css';
+import { getMapConfig } from '../api/map';
 
 interface MapError {
   title: string;
@@ -21,19 +22,14 @@ const MapView: React.FC = () => {
         console.log('开始初始化地图');
         setLoading(true);
 
-        // 获取API Key
-        const response = await fetch('/api/map-proxy');
-        if (!response.ok) {
-          throw new Error(`API请求失败: ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        if (!data.key) {
+        // 获取API Key，使用api/map.ts中的方法
+        const mapConfig = await getMapConfig();
+        if (!mapConfig.key) {
           throw new Error('API响应中没有key字段');
         }
         
         console.log('成功获取API密钥');
-        const key = data.key;
+        const key = mapConfig.key;
 
         // 加载高德地图
         const AMapInstance = await AMapLoader.load({

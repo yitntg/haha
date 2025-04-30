@@ -1,7 +1,11 @@
-import { AMAP_KEY } from '../config'
+import { getMapKey } from '../config'
 
 export const getMapConfig = async () => {
-  return {
-    key: AMAP_KEY
+  try {
+    const key = await getMapKey()
+    return { key, success: true }
+  } catch (error) {
+    console.error('获取地图配置失败:', error)
+    throw error
   }
 } 
