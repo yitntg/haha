@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
-import { getMapConfig } from '../api/map'
+import { getMapKey } from '../config'
 
 interface MapError {
   title: string
@@ -24,7 +24,7 @@ const error = ref<MapError | null>(null)
 
 onMounted(async () => {
   try {
-    const { key } = await getMapConfig()
+    const key = await getMapKey()
     
     if (!key) {
       throw new Error('MISSING_KEY')
@@ -71,7 +71,7 @@ onMounted(async () => {
     if (err.message === 'MISSING_KEY') {
       error.value = {
         title: '配置错误',
-        message: '未找到高德地图API密钥，请检查环境变量配置'
+        message: '未找到高德地图API密钥，请检查服务器配置'
       }
     } else if (err.message?.includes('invalid key')) {
       error.value = {
