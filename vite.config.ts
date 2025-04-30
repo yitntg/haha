@@ -26,7 +26,10 @@ export default defineConfig({
         manualChunks: {
           'vue': ['vue'],
           'amap': ['@amap/amap-jsapi-loader']
-        }
+        },
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     }
   }
