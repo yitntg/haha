@@ -1,8 +1,13 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { AMAP_KEY } from '../src/config';
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
-  // 这里应该从环境变量中获取API Key
-  const key = process.env.AMAP_KEY || 'your-amap-key';
-  
-  res.status(200).json({ key });
+export default async function handler(
+  request: VercelRequest,
+  response: VercelResponse
+) {
+  if (request.method !== 'GET') {
+    return response.status(405).json({ error: 'Method not allowed' });
+  }
+
+  return response.status(200).json({ key: AMAP_KEY });
 } 

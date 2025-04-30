@@ -1,0 +1,1 @@
+export const AMAP_KEY = process.env.AMAP_KEY 

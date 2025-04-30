@@ -1,6 +1,6 @@
 <template>
   <div class="map-container">
-    <div id="mapContainer"></div>
+    <div id="mapContainer" class="map"></div>
     <div v-if="error" class="error-message">{{ error }}</div>
   </div>
 </template>
@@ -8,6 +8,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
+import { getMapConfig } from '../api/map'
 
 const map = ref(null)
 const AMap = ref(null)
@@ -15,8 +16,10 @@ const error = ref('')
 
 onMounted(async () => {
   try {
+    const { key } = await getMapConfig()
+    
     const AMapInstance = await AMapLoader.load({
-      key: import.meta.env.AMAP_KEY,
+      key: key,
       version: "2.0",
       plugins: [
         'AMap.Scale',
@@ -59,10 +62,15 @@ onMounted(async () => {
 
 <style scoped>
 .map-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.map {
   width: 100%;
   height: 100%;
-  min-height: 500px;
-  position: relative;
 }
 
 .error-message {
