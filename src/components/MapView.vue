@@ -24,14 +24,15 @@ export default {
   methods: {
     async initMap() {
       try {
-        // 请使用高德地图Web端Key
-        // 获取方式：
-        // 1. 访问 https://lbs.amap.com/
-        // 2. 进入控制台
-        // 3. 创建新应用
-        // 4. 在"Key管理"中获取Web端Key（这种Key是专门用于前端的，可以安全使用）
+        // 从后端获取API Key
+        const response = await fetch('/api/map');
+        if (!response.ok) {
+          throw new Error('获取地图配置失败');
+        }
+        const { key } = await response.json();
+
         const AMap = await AMapLoader.load({
-          key: process.env.VUE_APP_AMAP_KEY,
+          key: key,
           version: "2.0",
           plugins: [
             'AMap.Scale',
