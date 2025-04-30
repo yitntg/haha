@@ -6,7 +6,7 @@ import path from 'path'
 export default defineConfig({
   base: '/',
   plugins: [
-    react()
+    react(),
   ],
   resolve: {
     alias: {
@@ -26,14 +26,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    rollupOptions: {
-      output: {
-        format: 'es',
-        entryFileNames: 'assets/[name].[hash].mjs',
-        chunkFileNames: 'assets/[name].[hash].mjs',
-        assetFileNames: 'assets/[name].[hash].[ext]'
-      }
-    }
+    target: 'es2015',
+    minify: 'terser',
+    cssCodeSplit: true,
+    sourcemap: false
   },
   optimizeDeps: {
     include: ['@amap/amap-jsapi-loader']
