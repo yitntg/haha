@@ -1,27 +1,8 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(
-  request: VercelRequest,
-  response: VercelResponse
-) {
-  try {
-    if (request.method !== 'GET') {
-      return response.status(405).json({ error: 'Method not allowed' });
-    }
-
-    const API_KEY = process.env.AMAP_KEY;
-    if (!API_KEY) {
-      console.error('AMAP_KEY is not set');
-      return response.status(500).json({ error: 'API key configuration error' });
-    }
-
-    // 返回API Key给前端
-    return response.status(200).json({ key: API_KEY });
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return response.status(500).json({
-      error: 'Internal server error',
-      details: error instanceof Error ? error.message : String(error)
-    });
-  }
+export default function handler(req: VercelRequest, res: VercelResponse) {
+  // 这里应该从环境变量中获取API Key
+  const key = process.env.AMAP_KEY || 'your-amap-key';
+  
+  res.status(200).json({ key });
 } 
