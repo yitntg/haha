@@ -62,7 +62,13 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onCopy, onDownload, 
             </div>
           </div>
         ) : (
-          <div className={`whitespace-pre-wrap rounded-lg p-3 ${isAssistant ? 'bg-button-dark' : 'bg-primary-blue text-white'}`}>
+          <div 
+            className={`whitespace-pre-wrap rounded-lg p-4 ${
+              isAssistant 
+                ? 'bg-button-dark text-white font-medium text-base leading-relaxed shadow-md' 
+                : 'bg-primary-blue text-white font-medium'
+            }`}
+          >
             {message.content}
           </div>
         )}
